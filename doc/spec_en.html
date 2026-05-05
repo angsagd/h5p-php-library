@@ -19,7 +19,7 @@
 <p>Mandatory properties:</p>
 <ul>
 <li>title - Name of the package. Would typically be used as header for a page displaying the package.</li>
-<li>language - Standard language code. Use 'en' for english, 'nb' for norwegian "bokmål". Neutral content use "und".</li>
+<li>language - Standard language code. Use 'en' for English, 'nb' for Norwegian Bokmal. Neutral content use "und".</li>
 <li>machineName - Machine readable name of the library. This is the name that will be used for the library folder in the package too.</li>
 <li>preloadedDependencies - Libraries that must be loaded on init. Specified as a list of objects with machineName, majorVersion and minorVersion. One would normally list all dependencies here to allow the platform displaying the package to merge JS and CSS files before returning the page.</li>
 <li>embedTypes - List of ways to embed the package in the web page. Currently "div" and "iframe" are supported.</li>
@@ -34,11 +34,11 @@
 <li>metaKeywords - Suggestion for keywords for the application, as a string. May be used for OG meta tags for social media.</li>
 <li>metaDescription - Suggestion for application metaDescription. May be used for OG meta tags for social media.</li>
 </ul>
-<h3>Eksempel på h5p.json:</h3>
+<h3>Example h5p.json:</h3>
 <code>{ <br/>
-  "title": "Biologi-spillet",<br/>
+  "title": "The Biology Game",<br/>
   "contentType": "Game",<br/>
-  "utilization": "Lær om biologi",<br/>
+  "utilization": "Learn about biology",<br/>
   "language": "nb",<br/>
   "author": "Amendor AS", <br/>
   "license": "cc-by-sa", <br/>
@@ -105,7 +105,7 @@ multichoice.attach($multichoiceContainer);</code>
 <li>h - Height in pixels for libraries that use a fixed height. Mandatory if the library shall be embedded in an iframe (see embedTypes below).</li>
 <li>embedTypes - List of possible ways to embed the package in the page. Available values are <i>div</i> and <i>iframe</i>.</li>
 </ul>
-<h3>Eksempel på library.json:</h3>
+<h3>Example library.json:</h3>
 <code>{<br/>
   "title": "Boardgame", <br/>
   "description": "The user is presented with a board with several hotspots. By clicking a hotspot he invokes a mini-game.", <br/>
@@ -149,7 +149,7 @@ multichoice.attach($multichoiceContainer);</code>
 <li>H5P.setGlobalData(namespace, variable, data)</li>
 <li>H5P.deleteGlobalData(namespace, variable)</li>
 </ul>
-<p>I tillegg er følgende api funksjoner tilgjengelig via ndla:</p>
+<p>In addition, the following API functions are available through NDLA:</p>
 <ul>
 <li>H5P.setUserScore(contentId, score, maxScore)</li>
 </ul>
