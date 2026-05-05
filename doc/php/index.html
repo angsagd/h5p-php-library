@@ -1,0 +1,779 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>H5P PHP Library Documentation</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --panel-soft: #f0f4f7;
+      --text: #172026;
+      --muted: #5d6972;
+      --line: #d9e0e6;
+      --accent: #0a6f7a;
+      --accent-strong: #084f58;
+      --code: #101820;
+      --code-bg: #edf2f6;
+      --warn: #8a5200;
+      --shadow: 0 12px 30px rgba(18, 32, 43, 0.08);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: auto;
+      border-right: 1px solid var(--line);
+      background: #ffffff;
+      padding: 20px;
+    }
+
+    .brand {
+      margin-bottom: 18px;
+    }
+
+    .brand h1 {
+      margin: 0 0 4px;
+      font-size: 20px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .brand p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .search {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-soft);
+      color: var(--text);
+      font: inherit;
+      outline: none;
+    }
+
+    .search:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(10, 111, 122, 0.15);
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin: 12px 0 18px;
+    }
+
+    .filter {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      color: var(--text);
+      cursor: pointer;
+      font: inherit;
+      font-size: 13px;
+      padding: 8px 9px;
+    }
+
+    .filter.active {
+      border-color: var(--accent);
+      background: #e7f4f5;
+      color: var(--accent-strong);
+      font-weight: 650;
+    }
+
+    .nav-title {
+      margin: 18px 0 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .nav-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-list a {
+      display: block;
+      overflow-wrap: anywhere;
+      border-radius: 6px;
+      color: var(--text);
+      padding: 7px 8px;
+      font-size: 13px;
+    }
+
+    .nav-list a:hover,
+    .nav-list a:focus {
+      background: var(--panel-soft);
+      text-decoration: none;
+    }
+
+    .main {
+      min-width: 0;
+      padding: 32px;
+    }
+
+    .hero {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 28px;
+      margin-bottom: 22px;
+    }
+
+    .hero h2 {
+      margin: 0 0 8px;
+      font-size: 32px;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .hero p {
+      max-width: 980px;
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-soft);
+      padding: 14px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 22px;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    section.doc-section {
+      scroll-margin-top: 20px;
+      margin-bottom: 18px;
+    }
+
+    details {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: 0 4px 16px rgba(18, 32, 43, 0.04);
+      overflow: hidden;
+    }
+
+    details[open] {
+      box-shadow: var(--shadow);
+    }
+
+    summary {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 18px;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .chevron {
+      width: 10px;
+      height: 10px;
+      border-right: 2px solid var(--accent);
+      border-bottom: 2px solid var(--accent);
+      transform: rotate(-45deg);
+      transition: transform .15s ease;
+      flex: 0 0 auto;
+    }
+
+    details[open] .chevron {
+      transform: rotate(45deg);
+    }
+
+    .summary-text {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .summary-text h3 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .summary-text p {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .badge {
+      border-radius: 999px;
+      background: #e7f4f5;
+      color: var(--accent-strong);
+      padding: 5px 9px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .content {
+      border-top: 1px solid var(--line);
+      padding: 18px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 16px;
+    }
+
+    .card h4 {
+      margin: 0 0 7px;
+      font-size: 16px;
+      letter-spacing: 0;
+    }
+
+    .card p,
+    .content p {
+      margin: 0 0 10px;
+      color: var(--muted);
+    }
+
+    .method-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .method {
+      border-left: 3px solid var(--accent);
+      border-radius: 0 6px 6px 0;
+      background: #f9fbfc;
+      padding: 11px 12px;
+    }
+
+    .method code,
+    .inline-code {
+      background: var(--code-bg);
+      border-radius: 5px;
+      color: var(--code);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+      padding: 2px 5px;
+    }
+
+    .method-title {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 5px;
+    }
+
+    .visibility {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0;
+    }
+
+    .chip {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 12px;
+      padding: 3px 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0 0;
+      font-size: 13px;
+    }
+
+    th,
+    td {
+      border: 1px solid var(--line);
+      padding: 8px 9px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--panel-soft);
+      color: var(--text);
+    }
+
+    .note {
+      border-left: 4px solid var(--warn);
+      background: #fff8ea;
+      border-radius: 0 6px 6px 0;
+      color: #5e3b00;
+      padding: 12px 14px;
+      margin: 14px 0;
+    }
+
+    .empty {
+      display: none;
+      border: 1px dashed var(--line);
+      border-radius: var(--radius);
+      color: var(--muted);
+      padding: 24px;
+      text-align: center;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 980px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: relative;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .main {
+        padding: 20px;
+      }
+
+      .stats,
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      summary {
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">
+        <h1>H5P PHP Docs</h1>
+        <p>Generated from the PHP files in this workspace.</p>
+      </div>
+      <input class="search" id="search" type="search" placeholder="Search files, classes, methods...">
+      <div class="filters" aria-label="Documentation filters">
+        <button class="filter active" data-filter="all" type="button">All</button>
+        <button class="filter" data-filter="file" type="button">Files</button>
+        <button class="filter" data-filter="class" type="button">Classes</button>
+        <button class="filter" data-filter="interface" type="button">Interfaces</button>
+      </div>
+      <div class="nav-title">Files</div>
+      <ul class="nav-list">
+        <li><a href="#file-h5p-classes">h5p.classes.php</a></li>
+        <li><a href="#file-storage-interface">h5p-file-storage.interface.php</a></li>
+        <li><a href="#file-default-storage">h5p-default-storage.class.php</a></li>
+        <li><a href="#file-development">h5p-development.class.php</a></li>
+        <li><a href="#file-event-base">h5p-event-base.class.php</a></li>
+        <li><a href="#file-metadata">h5p-metadata.class.php</a></li>
+        <li><a href="#file-embed">embed.php</a></li>
+      </ul>
+      <div class="nav-title">Primary APIs</div>
+      <ul class="nav-list">
+        <li><a href="#api-framework">H5PFrameworkInterface</a></li>
+        <li><a href="#api-file-storage">H5PFileStorage</a></li>
+        <li><a href="#api-core">H5PCore</a></li>
+        <li><a href="#api-validator">H5PValidator</a></li>
+        <li><a href="#api-content-validator">H5PContentValidator</a></li>
+        <li><a href="#api-storage">H5PStorage</a></li>
+      </ul>
+    </aside>
+
+    <main class="main">
+      <div class="hero">
+        <h2>PHP API documentation for h5p-php-library</h2>
+        <p>This document describes the PHP files, contracts, core classes, important methods, parameters, and return values in this workspace. It is a static, single-file reference with client-side search, filters, sidebar navigation, and collapsible sections.</p>
+        <div class="stats">
+          <div class="stat"><strong>7</strong><span>PHP files</span></div>
+          <div class="stat"><strong>15</strong><span>classes/interfaces</span></div>
+          <div class="stat"><strong>PHP 7+</strong><span>runtime target</span></div>
+          <div class="stat"><strong>GPL-3.0</strong><span>package license</span></div>
+        </div>
+      </div>
+
+      <div class="empty" id="empty">No documentation entries match the current search and filter.</div>
+
+      <section class="doc-section" id="file-h5p-classes" data-kind="file" data-search="h5p.classes.php H5PFrameworkInterface H5PValidator H5PStorage H5PCore H5PContentValidator permissions hub endpoints">
+        <details open>
+          <summary><span class="chevron" aria-hidden="true">&nbsp;</span><div class="summary-text"><h3>h5p.classes.php</h3><p>Main H5P API surface and core implementation.</p></div><span class="badge">5,630 lines</span></summary>
+          <div class="content">
+            <p>This is the central file of the library. It defines the platform integration interface, package validation, persistence orchestration, constants, core runtime helpers, content dependency resolution, AJAX helpers, H5P Hub integration, and content parameter validation.</p>
+            <div class="grid">
+              <div class="card"><h4>Defined types</h4><p><span class="inline-code">H5PFrameworkInterface</span>, <span class="inline-code">H5PValidator</span>, <span class="inline-code">H5PStorage</span>, <span class="inline-code">H5PPermission</span>, <span class="inline-code">H5PDisplayOptionBehaviour</span>, <span class="inline-code">H5PContentHubSyncStatus</span>, <span class="inline-code">H5PContentStatus</span>, <span class="inline-code">H5PHubEndpoints</span>, <span class="inline-code">H5PCore</span>, and <span class="inline-code">H5PContentValidator</span>.</p></div>
+              <div class="card"><h4>Integration role</h4><p>Frameworks implement the interface in this file and pass that implementation to <span class="inline-code">H5PCore</span>, <span class="inline-code">H5PValidator</span>, and <span class="inline-code">H5PStorage</span>.</p></div>
+            </div>
+            <div class="note">This file contains a large monolithic API. When changing it, check both platform implementations and JavaScript runtime expectations because many methods define cross-layer behavior.</div>
+          </div>
+        </details>
+      </section>
+
+      <section class="doc-section" id="api-framework" data-kind="interface" data-search="H5PFrameworkInterface platform database persistence permissions translations hub content library cache user data">
+        <details>
+          <summary><span class="chevron" aria-hidden="true">&nbsp;</span><div class="summary-text"><h3>H5PFrameworkInterface</h3><p>Contract that every LMS/CMS integration must implement.</p></div><span class="badge">interface</span></summary>
+          <div class="content">
+            <p>This interface isolates core H5P logic from the host platform. It covers platform metadata, HTTP requests, translations, messages, library/content database operations, options, permissions, cached assets, content type cache, and Content Hub metadata.</p>
+            <div class="method-list">
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>getPlatformInfo()</code></div><p>Returns platform information such as platform name, platform version, and H5P plugin/module version.</p><table><tr><th>Returns</th><td><code>array</code> with <code>name</code>, <code>version</code>, and <code>h5pVersion</code>.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>fetchExternalData($url, $data = NULL, $blocking = TRUE, $stream = NULL, $fullData = FALSE, $headers = array(), $files = array(), $method = 'POST')</code></div><p>Performs framework-owned HTTP communication for H5P.org, Content Hub, and remote metadata calls.</p><table><tr><th>Parameters</th><td><code>$url</code> target URL, <code>$data</code> payload, <code>$blocking</code> request mode, <code>$stream</code> output path, <code>$fullData</code> response metadata flag, <code>$headers</code>, <code>$files</code>, <code>$method</code>.</td></tr><tr><th>Returns</th><td><code>string|array|null</code>.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>t($message, $replacements = array())</code></div><p>Translates a string and applies H5P-style replacements such as <code>!raw</code>, <code>@escaped</code>, and <code>%placeholder</code>.</p><table><tr><th>Returns</th><td><code>string</code>.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>setErrorMessage($message, $code = NULL)</code> / <code>setInfoMessage($message)</code> / <code>getMessages($type)</code></div><p>Stores and retrieves user-facing messages emitted by validators and core operations.</p><table><tr><th>Returns</th><td><code>getMessages()</code> returns <code>string[]</code>.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>loadLibraries()</code>, <code>loadLibrary($machineName, $majorVersion, $minorVersion)</code>, <code>getLibraryId($machineName, $majorVersion = NULL, $minorVersion = NULL)</code></div><p>Loads installed library records and resolves library IDs. These methods are central to dependency resolution and package installation.</p><table><tr><th>Returns</th><td>Arrays describing libraries, library ID integers, or <code>FALSE</code> when missing.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>saveLibraryData(&amp;$libraryData, $new = TRUE)</code></div><p>Persists metadata from <code>library.json</code> and fills <code>libraryId</code> for newly stored libraries.</p><table><tr><th>Parameters</th><td><code>$libraryData</code> includes machine name, title, major/minor/patch versions, runnable flag, dependencies, asset lists, semantics, language, metadata settings, and display settings.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>insertContent($content, $contentMainId = NULL)</code> / <code>updateContent($content, $contentMainId = NULL)</code> / <code>loadContent($id)</code></div><p>Creates, updates, and loads content records. <code>$contentMainId</code> supports integrations that separate platform content IDs from version IDs.</p><table><tr><th>Returns</th><td><code>insertContent()</code> returns an ID; <code>loadContent()</code> returns content, library, title, language, params, and embed metadata.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>saveLibraryDependencies($libraryId, $dependencies, $dependency_type)</code> / <code>saveLibraryUsage($contentId, $librariesInUse)</code> / <code>loadContentDependencies($id, $type = NULL)</code></div><p>Maintains dependency data for libraries and content. Dependency types are <code>editor</code>, <code>preloaded</code>, and <code>dynamic</code>.</p><table><tr><th>Returns</th><td><code>loadContentDependencies()</code> returns a list of dependency library arrays.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>getOption($name, $default = NULL)</code> / <code>setOption($name, $value)</code></div><p>Reads and writes platform-level H5P settings, including cache timestamps and configuration values.</p><table><tr><th>Returns</th><td><code>mixed</code> for <code>getOption()</code>.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>hasPermission($permission, $id = NULL)</code></div><p>Delegates permission checks for H5P actions to the platform.</p><table><tr><th>Parameters</th><td><code>$permission</code> is one of <code>H5PPermission</code>; <code>$id</code> is optional platform context.</td></tr><tr><th>Returns</th><td><code>boolean</code>.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>replaceContentTypeCache($contentTypeCache)</code>, <code>replaceContentHubMetadataCache($metadata, $lang)</code>, <code>getContentHubMetadataCache($lang = 'en')</code></div><p>Stores and retrieves H5P Hub cache data used by content type discovery and Hub metadata flows.</p><table><tr><th>Returns</th><td>Cache methods return platform-specific storage results or JSON-serializable data.</td></tr></table></div>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <section class="doc-section" id="file-storage-interface" data-kind="file interface" data-search="h5p-file-storage.interface.php H5PFileStorage saveLibrary saveContent export cache assets file system">
+        <details>
+          <summary><span class="chevron" aria-hidden="true">&nbsp;</span><div class="summary-text"><h3>h5p-file-storage.interface.php</h3><p>File persistence contract for libraries, content, exports, uploads, and cached assets.</p></div><span class="badge">interface file</span></summary>
+          <div class="content">
+            <p>The <span class="inline-code">H5PFileStorage</span> interface abstracts physical storage. Implement it when H5P files are stored outside the local filesystem, such as object storage, custom CMS storage, or virtualized file APIs.</p>
+            <div class="method-list">
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>saveLibrary($library)</code> / <code>deleteLibrary($library)</code></div><p>Stores or removes a library folder based on library metadata.</p><table><tr><th>Parameters</th><td><code>$library</code>: library properties, normally including upload directory and version information.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>saveContent($source, $content)</code> / <code>deleteContent($content)</code> / <code>cloneContent($id, $newId)</code></div><p>Persists, removes, or duplicates content file directories.</p><table><tr><th>Parameters</th><td><code>$source</code> source directory, <code>$content</code> content properties, <code>$id</code> source content ID, <code>$newId</code> cloned content ID.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>getTmpPath()</code></div><p>Returns a unique temporary path for package extraction and import processing.</p><table><tr><th>Returns</th><td><code>string</code>.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>exportContent($id, $target)</code> / <code>exportLibrary($library, $target)</code> / <code>saveExport($source, $filename)</code></div><p>Copies content and library files into export folders, then stores generated <code>.h5p</code> export files.</p><table><tr><th>Returns</th><td>Storage-specific side effects; <code>saveExport()</code> may throw in implementations.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>cacheAssets(&amp;$files, $key)</code> / <code>getCachedAssets($key)</code> / <code>deleteCachedAssets($keys)</code></div><p>Aggregates JavaScript/CSS assets, resolves cached versions, and deletes obsolete aggregates.</p><table><tr><th>Returns</th><td><code>getCachedAssets()</code> returns an asset array or <code>NULL</code>.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>saveFile($file, $contentId)</code> / <code>cloneContentFile($file, $fromId, $toId)</code> / <code>moveContentDirectory($source, $contentId = NULL)</code></div><p>Supports editor uploads, copy/paste file cloning, and movement of extracted content files.</p><table><tr><th>Parameters</th><td><code>$file</code> is an editor file object, <code>$contentId</code> target content ID or editor temp context.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>hasWriteAccess()</code>, <code>hasPresave($libraryName, $developmentPath = null)</code>, <code>getUpgradeScript($machineName, $majorVersion, $minorVersion)</code></div><p>Reports storage readiness and looks up optional library scripts such as <code>presave.js</code> and <code>upgrades.js</code>.</p><table><tr><th>Returns</th><td><code>bool</code> for readiness/presave checks; relative path or <code>NULL</code> for upgrade script lookup.</td></tr></table></div>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <section class="doc-section" id="file-default-storage" data-kind="file class" data-search="h5p-default-storage.class.php H5PDefaultStorage local filesystem copy content library export cached assets uploads">
+        <details>
+          <summary><span class="chevron" aria-hidden="true">&nbsp;</span><div class="summary-text"><h3>H5PDefaultStorage</h3><p>Default local filesystem implementation of H5PFileStorage.</p></div><span class="badge">class</span></summary>
+          <div class="content">
+            <p>Defined in <span class="inline-code">h5p-default-storage.class.php</span>. It stores libraries under <span class="inline-code">/libraries</span>, content under <span class="inline-code">/content/{id}</span>, exports under <span class="inline-code">/exports</span>, cached assets under <span class="inline-code">/cachedassets</span>, and editor files under <span class="inline-code">/editor</span> unless an alternate editor path is supplied.</p>
+            <div class="method-list">
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>__construct($path, $alteditorpath = NULL)</code></div><p>Initializes storage root and optional editor directory.</p><table><tr><th>Parameters</th><td><code>$path</code>: base H5P files directory; <code>$alteditorpath</code>: optional separate editor path.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>saveLibrary($library)</code></div><p>Deletes any previous version folder for the same library folder name, then copies the uploaded library directory into local storage.</p><table><tr><th>Parameters</th><td><code>$library['uploadDirectory']</code> and library version fields are required.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>saveContent($source, $content)</code> / <code>deleteContent($content)</code> / <code>cloneContent($id, $newId)</code></div><p>Manages content directories using recursive file copy/delete operations.</p><table><tr><th>Returns</th><td>Side-effect only.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>getTmpPath()</code></div><p>Ensures the temp folder exists and returns a unique path beginning with <code>h5p-</code>.</p><table><tr><th>Returns</th><td><code>string</code>.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>exportContent($id, $target)</code> / <code>exportLibrary($library, $target, $developmentPath = NULL)</code></div><p>Copies content and library files to an export target. Library export intentionally omits patch version from the folder name inside the package.</p></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>saveExport($source, $filename)</code> / <code>deleteExport($filename)</code> / <code>hasExport($filename)</code></div><p>Stores, removes, and checks generated export files.</p><table><tr><th>Returns</th><td><code>hasExport()</code> returns <code>boolean</code>; <code>saveExport()</code> throws <code>Exception</code> if the directory or copy fails.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>cacheAssets(&amp;$files, $key)</code></div><p>Concatenates scripts and styles into one cached JS or CSS file per key. CSS relative URLs are rewritten to remain valid from the cached asset folder.</p><table><tr><th>Parameters</th><td><code>$files</code> is modified by reference to point at generated aggregate files.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>saveFile($file, $contentId)</code></div><p>Saves an editor-uploaded file into either the editor temp folder or a content folder based on <code>$contentId</code>.</p><table><tr><th>Returns</th><td>The input file object.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">private static</span><code>copyFileTree($source, $destination)</code>, <code>dirReady($path)</code>, <code>getIgnoredFiles($file)</code></div><p>Internal helpers for recursive copy, directory creation/permission checks, and <code>.h5pignore</code> support.</p></div>
+            </div>
+            <div class="note"><span class="inline-code">deleteLibrary($library)</span> is present but marked <span class="inline-code">TODO</span>, so this default implementation does not currently remove library folders through that method.</div>
+          </div>
+        </details>
+      </section>
+
+      <section class="doc-section" id="api-core" data-kind="class" data-search="H5PCore content dependencies assets display options hub ajax token slug library load save filter export localization">
+        <details>
+          <summary><span class="chevron" aria-hidden="true">&nbsp;</span><div class="summary-text"><h3>H5PCore</h3><p>Shared runtime service for content, libraries, dependencies, display options, and Hub operations.</p></div><span class="badge">class</span></summary>
+          <div class="content">
+            <p><span class="inline-code">H5PCore</span> is the main coordinator. It receives a platform implementation and a storage backend, then exposes helpers used by validators, storage, editors, renderers, AJAX endpoints, and Hub synchronization code.</p>
+            <div class="meta"><span class="chip">Core API 1.28</span><span class="chip">Default content whitelist</span><span class="chip">Display option flags</span><span class="chip">H5P Hub client</span></div>
+            <div class="method-list">
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>__construct(H5PFrameworkInterface $H5PFramework, $path, $url, $language = 'en', $export = FALSE)</code></div><p>Creates the core object, wraps <code>$path</code> in <code>H5PDefaultStorage</code> when it is not already an <code>H5PFileStorage</code>, sets URL/export settings, and initializes defaults.</p><table><tr><th>Parameters</th><td><code>$H5PFramework</code> platform adapter, <code>$path</code> storage path or storage object, <code>$url</code> public file URL, <code>$language</code>, <code>$export</code>.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>saveContent($content, $contentMainId = NULL)</code></div><p>Inserts or updates content through the framework and resets user data that must be invalidated when content changes.</p><table><tr><th>Returns</th><td><code>int</code> content ID.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>loadContent($id)</code></div><p>Loads content from the framework, validates metadata, and normalizes its main library data.</p><table><tr><th>Returns</th><td><code>object|array|null</code> content payload depending on platform data.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>filterParameters(&amp;$content)</code></div><p>Validates and filters content parameters, rebuilds content dependency cache, and refreshes export files when enabled.</p><table><tr><th>Returns</th><td>Filtered content object or <code>NULL</code> on failure.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>loadContentDependencies($id, $type = NULL)</code></div><p>Finds all libraries and asset files required for a content item.</p><table><tr><th>Returns</th><td><code>array</code> of dependencies.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>getDependenciesFiles($dependencies, $prefix = '')</code> / <code>getAssetsUrls($assets)</code></div><p>Converts dependency records into script/style file lists and public URLs.</p><table><tr><th>Returns</th><td><code>array</code>.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>loadLibrary($name, $majorVersion, $minorVersion)</code> / <code>loadLibrarySemantics($name, $majorVersion, $minorVersion)</code></div><p>Loads library metadata and semantics from development mode or framework storage.</p><table><tr><th>Returns</th><td>Library array or semantics JSON string.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>findLibraryDependencies(&amp;$dependencies, $library, $nextWeight = 1, $editor = FALSE)</code></div><p>Recursively flattens dependency trees while preserving load order and editor dependency behavior.</p><table><tr><th>Returns</th><td><code>int</code> next dependency weight.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public static</span><code>deleteFileTree($dir)</code>, <code>libraryToString($library)</code>, <code>libraryToFolderName($library)</code>, <code>libraryFromString($libraryString)</code></div><p>Utility methods for recursive deletion and converting library identifiers between arrays, strings, and folder names.</p><table><tr><th>Returns</th><td><code>boolean</code>, <code>string</code>, or <code>array|FALSE</code>.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>getDisplayOptionsForEdit($disable = NULL)</code> / <code>getDisplayOptionsForView($disable, $id)</code> / <code>getStorableDisplayOptions(&amp;$sources, $current)</code></div><p>Computes display option states for editing, viewing, storage, permissions, and author-controlled options.</p><table><tr><th>Returns</th><td><code>array</code> or packed integer display flags.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>createToken($action)</code> / <code>validToken($action, $token)</code></div><p>Creates and validates H5P action tokens using a 12-hour time factor and the framework token secret.</p><table><tr><th>Returns</th><td><code>string</code> token or <code>boolean</code> validity.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>ajaxSuccess($data = NULL, $only_data = FALSE)</code> / <code>ajaxError($message = NULL, $error_code = NULL, $status_code = NULL, $details = NULL)</code></div><p>Outputs JSON responses for platform AJAX endpoints. <code>ajaxError()</code> exits after printing.</p></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>fetchLibrariesMetadata($fetchingDisabled = FALSE, $onlyRegister = FALSE)</code> / <code>updateContentTypeCache($postData = NULL)</code></div><p>Contacts H5P.org/Hub endpoints to retrieve content type metadata and update platform caches.</p><table><tr><th>Returns</th><td><code>bool|object</code>.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>hubRetrieveContent($id)</code>, <code>hubPublishContent($data, $files, $content_hub_id = NULL)</code>, <code>hubSyncContent($hubId, $exportPath)</code>, <code>hubUnpublishContent($hubId)</code></div><p>Implements Content Hub retrieval, publishing, syncing, and unpublishing flows through the framework HTTP adapter.</p><table><tr><th>Returns</th><td><code>stdClass</code>, <code>bool</code>, or decoded response data depending on operation.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>getLocalization()</code></div><p>Returns translations and labels consumed by the core JavaScript runtime.</p><table><tr><th>Returns</th><td><code>array</code>.</td></tr></table></div>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <section class="doc-section" id="api-validator" data-kind="class" data-search="H5PValidator validate package h5p zip library json content json whitelist dependencies missing">
+        <details>
+          <summary><span class="chevron" aria-hidden="true">&nbsp;</span><div class="summary-text"><h3>H5PValidator</h3><p>Validates uploaded .h5p packages and library metadata.</p></div><span class="badge">class</span></summary>
+          <div class="content">
+            <p><span class="inline-code">H5PValidator</span> checks uploaded H5P packages before storage. It validates ZIP availability, package extension, file whitelist rules, JSON structure, library metadata, dependencies, missing libraries, and content files.</p>
+            <div class="method-list">
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>__construct($H5PFramework, $H5PCore)</code></div><p>Stores framework/core references and creates an <code>H5PContentValidator</code> instance.</p></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>isValidPackage($skipContent = FALSE, $upgradeOnly = FALSE)</code></div><p>Validates the last uploaded <code>.h5p</code> package: extension, ZIP extraction, file types, required <code>h5p.json</code>, optional content, libraries, dependencies, and install/update permissions.</p><table><tr><th>Parameters</th><td><code>$skipContent</code> validates only libraries when true; <code>$upgradeOnly</code> restricts validation for upgrade packages.</td></tr><tr><th>Returns</th><td><code>bool</code>.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>getLibraryData($file, $filePath, $tmpDir)</code></div><p>Reads and validates a library's <code>library.json</code>, semantics, language files, and asset file declarations.</p><table><tr><th>Returns</th><td>Validated library data array or <code>FALSE</code>.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">private</span><code>getJson($path, $zip, $file, $assoc = FALSE)</code> / <code>getJsonData($filePath, $return_as_string = FALSE)</code></div><p>Reads JSON from ZIP entries or disk and reports invalid JSON through framework error messages.</p></div>
+              <div class="method"><div class="method-title"><span class="visibility">private</span><code>getWhitelistRegExp($isLibrary)</code></div><p>Builds a file-extension whitelist from platform settings and core defaults.</p></div>
+              <div class="method"><div class="method-title"><span class="visibility">private</span><code>getMissingLibraries($libraries)</code> / <code>getMissingDependencies($dependencies, $libraries)</code></div><p>Detects unresolved library requirements in uploaded packages.</p></div>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <section class="doc-section" id="api-storage" data-kind="class" data-search="H5PStorage savePackage createExportFile deletePackage copyPackage libraries package export">
+        <details>
+          <summary><span class="chevron" aria-hidden="true">&nbsp;</span><div class="summary-text"><h3>H5PStorage</h3><p>Persists validated packages and builds export files.</p></div><span class="badge">class</span></summary>
+          <div class="content">
+            <p><span class="inline-code">H5PStorage</span> runs after validation. It saves libraries, content records, content files, export files, and package deletion/copy operations through <span class="inline-code">H5PCore</span>, <span class="inline-code">H5PFrameworkInterface</span>, and <span class="inline-code">H5PFileStorage</span>.</p>
+            <div class="method-list">
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>__construct(H5PFrameworkInterface $H5PFramework, H5PCore $H5PCore)</code></div><p>Stores platform and core references.</p></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>savePackage($content = NULL, $contentMainId = NULL, $skipContent = FALSE, $options = array())</code></div><p>Saves processed libraries when allowed, creates or updates content data, persists content files, and removes the temporary upload folder.</p><table><tr><th>Parameters</th><td><code>$content</code> content ID or data, <code>$contentMainId</code> platform main ID, <code>$skipContent</code>, <code>$options['disable']</code> display flags.</td></tr><tr><th>Returns</th><td>Documented as <code>bool</code>, but this implementation primarily performs side effects and stores the new content ID in <code>$contentId</code>.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>deletePackage($content)</code></div><p>Deletes content records, library usage, content files, and export files related to a package.</p></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>copyPackage($contentId, $copyFromId, $contentMainId = NULL)</code></div><p>Copies library usage and content files from one content item to another.</p></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>createExportFile($content)</code></div><p>Builds a downloadable <code>.h5p</code> export package for content, including content files, libraries, and metadata.</p></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>deleteExport($content)</code></div><p>Removes the export file associated with content.</p></div>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <section class="doc-section" id="api-content-validator" data-kind="class" data-search="H5PContentValidator validate metadata semantics text number boolean select list group library XSS filter files">
+        <details>
+          <summary><span class="chevron" aria-hidden="true">&nbsp;</span><div class="summary-text"><h3>H5PContentValidator</h3><p>Validates content parameters against semantics and sanitizes HTML.</p></div><span class="badge">class</span></summary>
+          <div class="content">
+            <p>This validator applies library semantics to content params. It validates primitive values, files, groups, lists, library references, metadata, dependencies, and rich text using an internal XSS filter derived from Drupal-style sanitation routines.</p>
+            <div class="method-list">
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>__construct($H5PFramework, $H5PCore)</code></div><p>Stores framework/core references and prepares dependency collection.</p></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>addon($library)</code> / <code>getDependencies()</code></div><p>Adds addon libraries and returns the flattened dependency list found during validation.</p><table><tr><th>Returns</th><td><code>getDependencies()</code> returns <code>array</code>.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>validateMetadata($metadata)</code></div><p>Filters and normalizes metadata fields such as title, authors, license, years, source, changes, and language.</p><table><tr><th>Returns</th><td><code>array</code> validated metadata.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>validateText(&amp;$text, $semantics)</code>, <code>validateNumber(&amp;$number, $semantics)</code>, <code>validateBoolean(&amp;$bool)</code>, <code>validateSelect(&amp;$select, $semantics)</code></div><p>Validates scalar semantics types and mutates invalid input into acceptable filtered values.</p></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>validateList(&amp;$list, $semantics)</code> / <code>validateGroup(&amp;$group, $semantics, $flatten = TRUE)</code></div><p>Recursively validates nested list and group semantics structures.</p></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>validateFile(&amp;$file, $semantics)</code>, <code>validateImage(&amp;$image, $semantics)</code>, <code>validateVideo(&amp;$video, $semantics)</code>, <code>validateAudio(&amp;$audio, $semantics)</code></div><p>Validates file-like values and allowed metadata keys for file, image, video, and audio semantics.</p></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>validateLibrary(&amp;$value, $semantics)</code></div><p>Validates a nested H5P library value against allowed options, loads the target library semantics, and validates nested params.</p></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>validateContentFiles($contentPath, $isLibrary = FALSE)</code></div><p>Checks files in a content or library folder against configured whitelists.</p><table><tr><th>Returns</th><td><code>bool</code>.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">private</span><code>filter_xss($string, $allowed_tags = array(...), $allowedStyles = FALSE)</code></div><p>Sanitizes rich text by removing dangerous tags, malformed entities, unsafe attributes, and disallowed protocols.</p><table><tr><th>Returns</th><td><code>string</code> safe HTML or an empty string for invalid UTF-8.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>getMetadataSemantics()</code> / <code>getCopyrightSemantics()</code></div><p>Returns semantics definitions used by editors for metadata and copyright forms.</p></div>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <section class="doc-section" id="file-development" data-kind="file class" data-search="h5p-development.class.php H5PDevelopment development mode libraries semantics language libraryToString">
+        <details>
+          <summary><span class="chevron" aria-hidden="true">&nbsp;</span><div class="summary-text"><h3>H5PDevelopment</h3><p>Development-mode library scanner and metadata provider.</p></div><span class="badge">class</span></summary>
+          <div class="content">
+            <p>Defined in <span class="inline-code">h5p-development.class.php</span>. It scans <span class="inline-code">{filesPath}/development</span> for library folders, reads <span class="inline-code">library.json</span>, stores/updates library data through the framework, and serves semantics/language files directly from disk.</p>
+            <div class="method-list">
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>__construct(H5PFrameworkInterface $H5PFramework, $filesPath, $language, $libraries = NULL)</code></div><p>Initializes development mode with a framework adapter, files path, language, and optional preloaded library cache.</p></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>getLibraries()</code></div><p>Returns all discovered development libraries.</p><table><tr><th>Returns</th><td><code>array</code>.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>getLibrary($name, $majorVersion, $minorVersion)</code></div><p>Finds one library by machine name and major/minor version.</p><table><tr><th>Returns</th><td><code>array|null</code>.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>getSemantics($name, $majorVersion, $minorVersion)</code></div><p>Reads <code>semantics.json</code> for a development library.</p><table><tr><th>Returns</th><td><code>string|null</code>.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>getLanguage($name, $majorVersion, $minorVersion, $language)</code></div><p>Reads <code>language/{language}.json</code> for a development library.</p><table><tr><th>Returns</th><td><code>string|null</code>.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public static</span><code>libraryToString($name, $majorVersion, $minorVersion)</code></div><p>Formats a library identifier as <code>Name major.minor</code>.</p><table><tr><th>Returns</th><td><code>string</code>.</td></tr></table></div>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <section class="doc-section" id="file-event-base" data-kind="file class" data-search="h5p-event-base.class.php H5PEventBase event log stats save saveStats getDataArray">
+        <details>
+          <summary><span class="chevron" aria-hidden="true">&nbsp;</span><div class="summary-text"><h3>H5PEventBase</h3><p>Abstract base class for event logging and statistics.</p></div><span class="badge">abstract class</span></summary>
+          <div class="content">
+            <p>Defined in <span class="inline-code">h5p-event-base.class.php</span>. Integrations extend this class to persist event logs and statistics counters. The constructor decides whether to call <span class="inline-code">save()</span> and <span class="inline-code">saveStats()</span> based on log level and event type.</p>
+            <div class="method-list">
+              <div class="method"><div class="method-title"><span class="visibility">public</span><code>__construct($type, $sub_type = NULL, $content_id = NULL, $content_title = NULL, $library_name = NULL, $library_version = NULL)</code></div><p>Captures event metadata, sets the current timestamp, and dispatches persistence/stat updates when configured.</p></div>
+              <div class="method"><div class="method-title"><span class="visibility">protected</span><code>getDataArray()</code></div><p>Returns event fields as an associative array with non-null values suitable for database insert/update operations.</p><table><tr><th>Returns</th><td><code>array</code>.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">protected</span><code>getFormatArray()</code></div><p>Returns WordPress-style DB format strings for the event fields.</p><table><tr><th>Returns</th><td><code>array</code> of format strings.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">abstract protected</span><code>save()</code> / <code>saveStats()</code></div><p>Must be implemented by the platform-specific subclass to store event records and update counters.</p></div>
+            </div>
+            <table><tr><th>Constants</th><td><code>LOG_NONE = 0</code>, <code>LOG_ALL = 1</code>, <code>LOG_ACTIONS = 2</code>.</td></tr><tr><th>Static options</th><td><code>$log_level</code> defaults to <code>LOG_ACTIONS</code>; <code>$log_time</code> defaults to 30 days.</td></tr></table>
+          </div>
+        </details>
+      </section>
+
+      <section class="doc-section" id="file-metadata" data-kind="file class" data-search="h5p-metadata.class.php H5PMetadata metadata JSON DB array license authors title boolify settings">
+        <details>
+          <summary><span class="chevron" aria-hidden="true">&nbsp;</span><div class="summary-text"><h3>H5PMetadata</h3><p>Static helper for metadata serialization and database mapping.</p></div><span class="badge">abstract class</span></summary>
+          <div class="content">
+            <p>Defined in <span class="inline-code">h5p-metadata.class.php</span>. It maps supported metadata fields to storage types, truncates text fields to configured lengths, converts camelCase to snake_case DB fields, JSON-encodes complex values, and normalizes library metadata settings.</p>
+            <div class="method-list">
+              <div class="method"><div class="method-title"><span class="visibility">public static</span><code>toJSON($content)</code></div><p>Creates a JSON string for content metadata fields, including title, accessibility title, authors, source, license, license extras, years, changes, default language, and author comments.</p><table><tr><th>Parameters</th><td><code>$content</code>: object with DB-style metadata properties.</td></tr><tr><th>Returns</th><td><code>string</code>.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public static</span><code>toDBArray($metadata, $include_title = TRUE, $include_missing = TRUE, &amp;$types = array())</code></div><p>Converts metadata object/array into DB-ready fields, applying max lengths, integer casting, JSON encoding, missing-field behavior, and DB format types.</p><table><tr><th>Returns</th><td><code>array</code> keyed by snake_case field names. <code>$types</code> is filled with SQL format hints.</td></tr></table></div>
+              <div class="method"><div class="method-title"><span class="visibility">public static</span><code>boolifyAndEncodeSettings($metadataSettings)</code></div><p>Converts <code>metadataSettings.disable</code> and <code>disableExtraTitleField</code> from integer flags to booleans, then JSON-encodes the settings.</p><table><tr><th>Returns</th><td><code>string</code>.</td></tr></table></div>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <section class="doc-section" id="file-embed" data-kind="file" data-search="embed.php iframe template H5PIntegration scripts styles content html">
+        <details>
+          <summary><span class="chevron" aria-hidden="true">&nbsp;</span><div class="summary-text"><h3>embed.php</h3><p>HTML template for iframe-based H5P embeds.</p></div><span class="badge">template</span></summary>
+          <div class="content">
+            <p>This file is not a class. It emits a complete HTML document for embedded H5P content. It expects variables from the caller and escapes language, title, script URLs, style URLs, and content ID before output.</p>
+            <table>
+              <tr><th>Expected variables</th><td><code>$lang</code>, <code>$content</code>, <code>$scripts</code>, <code>$styles</code>, <code>$additional_embed_head_tags</code>, and <code>$integration</code>.</td></tr>
+              <tr><th>Output</th><td>A document with <code>&lt;html class="h5p-iframe"&gt;</code>, asset tags, <code>&lt;div class="h5p-content" data-content-id="..."&gt;</code>, and a JSON-encoded <code>H5PIntegration</code> JavaScript object.</td></tr>
+              <tr><th>Security behavior</th><td>Uses <code>htmlspecialchars(..., ENT_QUOTES, 'UTF-8')</code> for scalar HTML attributes/text and <code>intval()</code> for content ID.</td></tr>
+            </table>
+          </div>
+        </details>
+      </section>
+
+      <section class="doc-section" id="api-constants" data-kind="class" data-search="H5PPermission H5PDisplayOptionBehaviour H5PContentHubSyncStatus H5PContentStatus H5PHubEndpoints constants enums">
+        <details>
+          <summary><span class="chevron" aria-hidden="true">&nbsp;</span><div class="summary-text"><h3>Constants and enum-like classes</h3><p>Abstract classes used as shared constants across framework and core code.</p></div><span class="badge">constants</span></summary>
+          <div class="content">
+            <div class="grid">
+              <div class="card"><h4>H5PPermission</h4><p><code>DOWNLOAD_H5P</code>, <code>EMBED_H5P</code>, <code>CREATE_RESTRICTED</code>, <code>UPDATE_LIBRARIES</code>, <code>INSTALL_RECOMMENDED</code>, and <code>COPY_H5P</code>. Used by <code>hasPermission()</code> and display option logic.</p></div>
+              <div class="card"><h4>H5PDisplayOptionBehaviour</h4><p><code>NEVER_SHOW</code>, <code>CONTROLLED_BY_AUTHOR_DEFAULT_ON</code>, <code>CONTROLLED_BY_AUTHOR_DEFAULT_OFF</code>, <code>ALWAYS_SHOW</code>, and <code>CONTROLLED_BY_PERMISSIONS</code>.</p></div>
+              <div class="card"><h4>H5PContentHubSyncStatus</h4><p><code>NOT_SYNCED</code>, <code>SYNCED</code>, <code>WAITING</code>, and <code>FAILED</code>. Used for Content Hub synchronization state.</p></div>
+              <div class="card"><h4>H5PContentStatus</h4><p><code>STATUS_UNPUBLISHED</code>, <code>STATUS_DOWNLOADED</code>, <code>STATUS_WAITING</code>, <code>STATUS_FAILED_DOWNLOAD</code>, <code>STATUS_FAILED_VALIDATION</code>, and <code>STATUS_SUSPENDED</code>.</p></div>
+              <div class="card"><h4>H5PHubEndpoints</h4><p>Defines Content Hub endpoint host/path constants and <code>createURL($endpoint)</code>, which chooses <code>https</code> when OpenSSL is loaded and <code>http</code> otherwise.</p></div>
+              <div class="card"><h4>H5PCore flags</h4><p>Includes disable flags such as <code>DISABLE_FRAME</code>, <code>DISABLE_DOWNLOAD</code>, <code>DISABLE_EMBED</code>, <code>DISABLE_COPYRIGHT</code>, and display option keys such as <code>frame</code>, <code>export</code>, <code>embed</code>, <code>copyright</code>, <code>icon</code>, and <code>copy</code>.</p></div>
+            </div>
+          </div>
+        </details>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      var search = document.getElementById('search');
+      var filters = Array.prototype.slice.call(document.querySelectorAll('.filter'));
+      var sections = Array.prototype.slice.call(document.querySelectorAll('.doc-section'));
+      var empty = document.getElementById('empty');
+      var activeFilter = 'all';
+
+      function normalize(value) {
+        return (value || '').toLowerCase().replace(/\s+/g, ' ').trim();
+      }
+
+      function matchesFilter(section) {
+        if (activeFilter === 'all') {
+          return true;
+        }
+        return (section.dataset.kind || '').split(/\s+/).indexOf(activeFilter) !== -1;
+      }
+
+      function matchesSearch(section, query) {
+        if (!query) {
+          return true;
+        }
+        return normalize(section.textContent + ' ' + (section.dataset.search || '')).indexOf(query) !== -1;
+      }
+
+      function applyState() {
+        var query = normalize(search.value);
+        var visibleCount = 0;
+
+        sections.forEach(function (section) {
+          var visible = matchesFilter(section) && matchesSearch(section, query);
+          section.classList.toggle('hidden', !visible);
+          if (visible) {
+            visibleCount += 1;
+            if (query) {
+              var details = section.querySelector('details');
+              if (details) {
+                details.open = true;
+              }
+            }
+          }
+        });
+
+        empty.style.display = visibleCount ? 'none' : 'block';
+      }
+
+      filters.forEach(function (button) {
+        button.addEventListener('click', function () {
+          activeFilter = button.dataset.filter;
+          filters.forEach(function (item) {
+            item.classList.toggle('active', item === button);
+          });
+          applyState();
+        });
+      });
+
+      search.addEventListener('input', applyState);
+
+      document.addEventListener('keydown', function (event) {
+        if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+          event.preventDefault();
+          search.focus();
+          search.select();
+        }
+      });
+    }());
+  </script>
+</body>
+</html>
